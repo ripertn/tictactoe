@@ -8,7 +8,7 @@ defmodule Tictactoe do
 
   def init(:ok) do
     board = [[" "," "," "],[" "," "," "],[" "," "," "]]
-    last_player = :player1
+    last_player = :player2
     schedule_work()
     {:ok, {board, last_player, 0}}
   end
