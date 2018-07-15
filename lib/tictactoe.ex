@@ -7,8 +7,7 @@ defmodule Tictactoe do
   def stop(server), do: GenServer.stop(server)
 
   def init(:ok) do
-    # %TTT{turns: %{x: MapSet.new, o: MapSet.new}, last_player: :player}
-    board = [[:empty,:empty,:empty],[:empty,:empty,:empty],[:empty,:empty,:empty]]
+    board = [[" "," "," "],[" "," "," "],[" "," "," "]]
     last_player = :player1
     schedule_work()
     {:ok, {board, last_player, 0}}
@@ -38,9 +37,10 @@ defmodule Tictactoe do
 
   defp schedule_work(), do: Process.send_after(self(), :work, 100) # every 100ms
 
-  def display({board, _, time}) do
-    IO.puts("time spent since the beginning of the game: " <> to_string(time) <> "ms")
-    Enum.map(board, fn el -> IO.inspect(el) end)
+  def display({board, last_player , time}) do
+    line = "-------------\n"
+    IO.puts("chrono: " <> to_string(time) <> "ms, waiting after " <> to_string(nextPlayer(last_player)))
+    IO.puts(line <> (Enum.map(board, &("| " <> Enum.join(&1, " | ") <> " |\n")) |> Enum.join(line)) <> line)
   end
 
   def updateBoard({x,y}, board, val) do
@@ -48,11 +48,13 @@ defmodule Tictactoe do
   end
 
   def validmove?({x,y}=coord, board) do
-    (Enum.at(board, y) |> Enum.at(x)) == :empty && {true,coord} || {false,coord}
+    (Enum.at(board, y) |> Enum.at(x)) == " " && {true,coord} || {false,coord}
   end
 
   def pawn(:player1), do: :o
   def pawn(:player2), do: :x
-  def pawn(_), do: :unknown
-
+  def pawn(_), do: :nok
+  def nextPlayer(:player1), do: :player2
+  def nextPlayer(:player2), do: :player1
+  def nextPlayer(_), do: :nok
 end
